@@ -22,23 +22,16 @@ class MainController extends AbstractController
         //     'numberOfStarships' => $starshipCount,
         // ]);
 
-        // Pasando una matriz asociativa
-        // $myShip = [
-        //     'name' => 'USS LeafyCruiser (NCC-0001)',
-        //     'class' => 'Garden',
-        //     'captain' => 'Jean-Luc Pickles',
-        //     'status' => 'under construction',
-        // ];
-
-
         // Añadiendo el servicio
         $ships = $starshipRepository->findAll();
         $starshipCount = count($ships);
         $myShip = $ships[array_rand($ships)];
-
+        
+        // Para hacer el recuento dentro de Twig, eliminamos la variable starShipCount y le pasamos ships
         return $this->render('main/homepage.html.twig', [
             'numberOfStarships' => $starshipCount,
-            'myShip' => $myShip,
+            'myShip' => $myShip,//matriz asociativa
+            'ships' => $ships,//objeto
         ]);
     }
 }

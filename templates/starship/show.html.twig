@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{# Si ponermos la línea de debajo cambia el título de base por este propio #}
+
+{% block title %}
+    {{ parent() }} Starshop: Beam up some parts!{% endblock %}
+
+{% block body %}
+<h1>
+    Starshop: your monopoly-busting option for Starship parts!
+</h1>
+
+<div>
+    Browse through {{ ship|length *10}} starships!{#objeto#}
+    
+    {% if ship|length > 2 %}
+        <p> 
+            That's a shipsloads of ships
+        </p>
+    {% endif %}
+</div>
+
+<div>
+    <h2>My Ship</h2>
+
+    <table>
+        <tr>
+            <th>Name</th>
+            <td>{{ ship.name }}</td>
+        </tr>
+        <tr>
+            <th>Class</th>
+            <td>{{ ship.class }}</td>
+        </tr>
+        <tr>
+            <th>Captain</th>
+            <td>{{ ship.captain|upper|lower|title }}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>{{ ship.status }}</td>
+        </tr>
+    </table>
+</div>
+{% endblock %}

@@ -11,12 +11,18 @@
 </h1>
 
 <div>
-    Browse through {{ numberOfStarships * 10 }} starships!
+    Browse through {{ numberOfStarships * 10 }} starships!<br>{#matriz asociativa#}
+    Browse through {{ ships|length *10}} starships!{#objeto#}
 
     {% if numberOfStarships > 400 %}
         <p>
             {# Do you think "shiploads" will pass the legal team? #}
             That's a shiploads of ships!
+        </p>
+    {% endif %}
+    {% if ships|length > 2 %}
+        <p> 
+            That's a shipsloads of ships
         </p>
     {% endif %}
 </div>
@@ -27,7 +33,11 @@
     <table>
         <tr>
             <th>Name</th>
-            <td>{{ myShip.name }}</td>
+            <td>
+                <a href="{{path('app_starship_show', {
+                    id:myShip.id })
+                }}">
+                {{ myShip.name }}</td></a>
         </tr>
         <tr>
             <th>Class</th>
