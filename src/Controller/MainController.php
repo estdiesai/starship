@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Repository\StarshipRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -19,6 +21,7 @@ class MainController extends AbstractController
 {
     #[Route('/')]
     public function homepage(StarshipRepository $starshipRepository, 
+        EntityManagerInterface $em,
         HttpClientInterface $client, 
         CacheInterface $issLocationPool, 
         #[Autowire(param: 'iss_location_cache_ttl')]
@@ -35,7 +38,11 @@ class MainController extends AbstractController
         // ]);
 
         // Añadiendo el servicio
-        $ships = $starshipRepository->findAll();
+        // $ships = $starshipRepository->findAll();
+        // utilizando en EntitityManager
+        $ships = $em->createQuery('SELECT s FROM App\Entity\Starship s')->getResult();
+        
+        
         $starshipCount = count($ships);
         $myShip = $ships[array_rand($ships)];
         
