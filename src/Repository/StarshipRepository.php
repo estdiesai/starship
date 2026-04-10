@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Model\Starship;
 use App\Model\StarshipStatusEnum;
+use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 
 class StarshipRepository
@@ -22,21 +23,24 @@ class StarshipRepository
                 'USS LeafyCruiser (NCC-0001)',
                 'Garden',
                 'Jean-Luc Pickles',
-                StarshipStatusEnum::IN_PROGRESS
+                StarshipStatusEnum::IN_PROGRESS,
+                new DateTimeImmutable(),
             ),
             new Starship(
                 2,
                 'USS Espresso (NCC-1234-C)',
                 'Latte',
                 'James T. Quick!',
-                StarshipStatusEnum::COMPLETED
+                StarshipStatusEnum::COMPLETED,
+                new DateTimeImmutable('2025-12-31'),
             ),
             new Starship(
                 3,
                 'USS Wanderlust (NCC-2024-W)',
                 'Delta Tourist',
                 'Kathryn Journeyway',
-                StarshipStatusEnum::WAITING
+                StarshipStatusEnum::WAITING,
+                new DateTimeImmutable('2026-04-10'),
             ),
         ];
     }
