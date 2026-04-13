@@ -1,10 +1,10 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Form;
 
+use App\Entity\Starship;
 use App\Entity\StarshipPart;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -14,6 +14,15 @@ class StarshipPartType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('name')
+            ->add('price')
+            ->add('notes')
+            ->add('createdAt')
+            ->add('updatedAt')
+            ->add('starship', EntityType::class, [
+                'class' => Starship::class,
+                'choice_label' => 'id',
+            ])
         ;
     }
 

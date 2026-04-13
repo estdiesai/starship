@@ -1,12 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Entity;
 
-use App\Model\StarshipStatusEnum;
 use App\Repository\StarshipRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation\Slug;
+use Gedmo\Mapping\Annotation\Timestampable;
 
 #[ORM\Entity(repositoryClass: StarshipRepository::class)]
 class Starship
@@ -16,20 +15,32 @@ class Starship
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     private ?string $class = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     private ?string $captain = null;
 
-    #[ORM\Column(enumType: StarshipStatusEnum::class)]
+    #[ORM\Column]
     private ?StarshipStatusEnum $status = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $arrivedAt = null;
+
+    #[ORM\Column(unique: true)]
+    #[Slug(fields: ['name'])]
+    private ?string $slug = null;
+
+    #[ORM\Column]
+    #[Timestampable(on: 'create')]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    #[Timestampable(on: 'update')]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     public function getId(): ?int
     {
@@ -92,6 +103,56 @@ class Starship
     public function setArrivedAt(\DateTimeImmutable $arrivedAt): static
     {
         $this->arrivedAt = $arrivedAt;
+
+        return $this;
+    }
+
+    public function getStatusString(): string
+    {
+        return $this->status->value;
+    }
+
+    public function getStatusImageFilename(): string
+    {
+        return match ($this->status) {
+            StarshipStatusEnum::WAITING => 'images/status-waiting.png',
+            StarshipStatusEnum::IN_PROGRESS => 'images/status-in-progress.png',
+            StarshipStatusEnum::COMPLETED => 'images/status-complete.png',
+        };
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(?string $slug): static
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

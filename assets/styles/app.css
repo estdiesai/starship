@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
-body {
-    background-color: skyblue;
+/* @plugin "@tailwindcss/forms"; */
+input, textarea, select {
+    background-color: inherit;
 }
