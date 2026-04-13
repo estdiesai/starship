@@ -46,22 +46,12 @@ class MainController extends AbstractController
         $starshipCount = count($ships);
         $myShip = $ships[array_rand($ships)];
         
-        // para que la petición sea más rápida utilizamos la caché
-        $issData = $issLocationPool->get('iss_location_data', function () use ($client): array {
-            
-            // Hace una petición http a una API que nos va a devolver la coordenadas
-            $response = $client->request('GET', 'https://api.wheretheiss.at/v1/satellites/25544');
-            return $response->toArray();
-            // al poner dump en la barra aparece un simbolo nuevo con la información y si lo pulsas se abre el profiler
-            //dump($issData);
-        });
-  
+       
         // Para hacer el recuento dentro de Twig, eliminamos la variable starShipCount y le pasamos ships
         return $this->render('main/homepage.html.twig', [
             'numberOfStarships' => $starshipCount,
             'myShip' => $myShip,//matriz asociativa
             'ships' => $ships,//objeto
-            'issData' => $issData
         ]);
     }
 }
