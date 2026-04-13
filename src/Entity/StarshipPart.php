@@ -1,40 +1,38 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Entity;
 
 use App\Repository\StarshipPartRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\UX\Turbo\Attribute\Broadcast;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StarshipPartRepository::class)]
-#[Broadcast]
 class StarshipPart
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
+    
+    #[Assert\NotBlank(message: 'Every part should have a name!')]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Assert\NotBlank(message: 'You forgot to set the price!')]
+    #[Assert\GreaterThan(value: 0, message: 'Starship part cannot be free')]
     #[ORM\Column]
-    private ?float $price = null;
+    private ?int $price = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $notes = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $updatedAt = null;
-
-    #[ORM\Column(type: Types::JSON_OBJECT)]
-    private mixed $startship = null;
+    #[ORM\ManyToOne(inversedBy: 'parts')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Starship $starship = null;
 
     public function getId(): ?int
     {
@@ -53,12 +51,12 @@ class StarshipPart
         return $this;
     }
 
-    public function getPrice(): ?float
+    public function getPrice(): ?int
     {
         return $this->price;
     }
 
-    public function setPrice(float $price): static
+    public function setPrice(int $price): static
     {
         $this->price = $price;
 
@@ -70,45 +68,21 @@ class StarshipPart
         return $this->notes;
     }
 
-    public function setNotes(string $notes): static
+    public function setNotes(?string $notes): static
     {
         $this->notes = $notes;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getStarship(): ?Starship
     {
-        return $this->createdAt;
+        return $this->starship;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    public function setStarship(?Starship $starship): static
     {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function getStartship(): mixed
-    {
-        return $this->startship;
-    }
-
-    public function setStartship(mixed $startship): static
-    {
-        $this->startship = $startship;
+        $this->starship = $starship;
 
         return $this;
     }
