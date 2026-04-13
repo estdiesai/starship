@@ -11,26 +11,41 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class StarshipPartType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name')
+            ->add('name', null, [
+                'constraints' => [
+                    new NotBlank(),
+                    // new NotBlank([], 'Every part should have a name!'),// me da error 
+                ],
+            ])
             ->add('price')
             ->add('notes')
-            ->add('createdAt')
-            ->add('updatedAt')
             ->add('starship', EntityType::class, [
                 'class' => Starship::class,
-                'choice_label' => 'id',
+                'choice_label' => function (Starship $starship) {
+                    return sprintf(
+                        '%s (by %s)',
+                        $starship->getName(),
+                        $starship->getCaptain(),
+                    );
+                },
                 'query_builder' => function (EntityRepository $repo) {
                     return $repo->createQueryBuilder('starship')
                         ->orderBy('starship.name', Order::Ascending->value);
                 },
             ])
-            ->add('createAndAddNew', SubmitType::class)
+            ->add('createAndAddNew', SubmitType::class, [
+                'validate' => false,
+                'attr' => [
+                    'class' => 'text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5 me-2 mb-2 cursor-pointer',
+                ],
+            ])
         ;
     }
 

@@ -20,8 +20,10 @@ class AdminController extends AbstractController
         EntityManagerInterface $entityManager,
     ): Response {
         $form = $this->createForm(StarshipPartType::class);
+        
         $form->handleRequest($request);
-        if ($form->isSubmitted()) {
+
+        if ($form->isSubmitted() && $form->isValid()) {
             /** @var StarshipPart $part */
             $part = $form->getData();
             $entityManager->persist($part);
