@@ -2,14 +2,21 @@
 
 namespace App\Entity;
 
+use App\Repository\StarshipPartRepository;
 use App\Repository\StarshipRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation\Slug;
 use Gedmo\Mapping\Annotation\Timestampable;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: StarshipRepository::class)]
 class Starship
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -24,7 +31,8 @@ class Starship
     #[ORM\Column]
     private ?string $captain = null;
 
-    #[ORM\Column]
+    // #[ORM\Column]
+    #[ORM\Column(enumType: StarshipStatusEnum::class)]
     private ?StarshipStatusEnum $status = null;
 
     #[ORM\Column]
@@ -34,13 +42,24 @@ class Starship
     #[Slug(fields: ['name'])]
     private ?string $slug = null;
 
-    #[ORM\Column]
-    #[Timestampable(on: 'create')]
-    private ?\DateTimeImmutable $createdAt = null;
+    /**
+     * @var Collection<int, StarshipPart>
+     */
+    #[ORM\OneToMany(targetEntity: StarshipPart::class, mappedBy: 'starship', fetch: 'EXTRA_LAZY', orphanRemoval: true)]
+    #[ORM\OrderBy(['name' => 'ASC'])]
+    private Collection $parts;
 
-    #[ORM\Column]
-    #[Timestampable(on: 'update')]
-    private ?\DateTimeImmutable $updatedAt = null;
+    /**
+     * @var Collection<int, StarshipDroid>
+     */
+    #[ORM\OneToMany(targetEntity: StarshipDroid::class, mappedBy: 'starship', cascade: ['persist'])]
+    private Collection $starshipDroids;
+
+    public function __construct()
+    {
+        $this->parts = new ArrayCollection();
+        $this->starshipDroids = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -133,26 +152,113 @@ class Starship
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function checkIn(?\DateTimeImmutable $arrivedAt = null): static
     {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(?\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
+        $this->arrivedAt = $arrivedAt ?? new \DateTimeImmutable('now');
+        $this->status = StarshipStatusEnum::WAITING;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    /**
+     * @return Collection<int, StarshipPart>
+     */
+    public function getParts(): Collection
     {
-        return $this->updatedAt;
+        return $this->parts;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    /**
+     * @return Collection<int, StarshipPart>
+     */
+    public function getExpensiveParts(): Collection
     {
-        $this->updatedAt = $updatedAt;
+        return $this->parts->matching(StarshipPartRepository::createExpensiveCriteria());
+    }
+
+    public function addPart(StarshipPart $part): static
+    {
+        if (!$this->parts->contains($part)) {
+            $this->parts->add($part);
+            $part->setStarship($this);
+        }
+
+        return $this;
+    }
+
+    public function removePart(StarshipPart $part): static
+    {
+        if ($this->parts->removeElement($part)) {
+            // set the owning side to null (unless already changed)
+            if ($part->getStarship() === $this) {
+                $part->setStarship(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Droid>
+     */
+    public function getDroids(): Collection
+    {
+        return $this->starshipDroids->map(fn (StarshipDroid $starshipDroid) => $starshipDroid->getDroid());
+    }
+
+    public function addDroid(Droid $droid, \DateTimeImmutable $assignedAt = null): static
+    {
+        if (!$this->getDroids()->contains($droid)) {
+            $starshipDroid = new StarshipDroid();
+            $starshipDroid->setDroid($droid);
+            $starshipDroid->setStarship($this);
+            if ($assignedAt) {
+                $starshipDroid->setAssignedAt($assignedAt);
+            }
+            $this->starshipDroids->add($starshipDroid);
+        }
+
+        return $this;
+    }
+
+    public function removeDroid(Droid $droid): static
+    {
+        $this->droids->removeElement($droid);
+
+        return $this;
+    }
+
+    public function getDroidNames(): string
+    {
+        return implode(', ', $this->getDroids()->map(fn(Droid $droid) => $droid->getName())->toArray());
+    }
+
+    /**
+     * @return Collection<int, StarshipDroid>
+     */
+    public function getStarshipDroids(): Collection
+    {
+        return $this->starshipDroids;
+    }
+
+    public function addStarshipDroid(StarshipDroid $starshipDroid): static
+    {
+        if (!$this->starshipDroids->contains($starshipDroid)) {
+            $this->starshipDroids->add($starshipDroid);
+            $starshipDroid->setStarship($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStarshipDroid(StarshipDroid $starshipDroid): static
+    {
+        if ($this->starshipDroids->removeElement($starshipDroid)) {
+            // set the owning side to null (unless already changed)
+            if ($starshipDroid->getStarship() === $this) {
+                $starshipDroid->setStarship(null);
+            }
+        }
 
         return $this;
     }

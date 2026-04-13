@@ -29,7 +29,7 @@ class StarshipRepository extends ServiceEntityRepository
             ->orderBy('COUNT(starshipDroid)', 'ASC')
             ->leftJoin('s.starshipDroids', 'starshipDroid')
             ->groupBy('s.id')
-            //->setParameter('status', StarshipStatusEnum::COMPLETED)
+            ->setParameter('status', StarshipStatusEnum::COMPLETED)
             ->getQuery()
         ;
 

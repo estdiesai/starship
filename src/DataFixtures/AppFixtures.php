@@ -32,6 +32,10 @@ class AppFixtures extends Fixture
         $ship3->setStatus(StarshipStatusEnum::WAITING);
         $ship3->setArrivedAt(new \DateTimeImmutable('-1 month'));
 
+        $manager->persist($ship1);
+        $manager->persist($ship2);
+        $manager->persist($ship3);
+
         $manager->flush();
     }
 }

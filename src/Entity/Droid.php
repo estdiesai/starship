@@ -20,6 +20,7 @@ class Droid
 
     #[ORM\Column(length: 255)]
     private ?string $primaryFunction = null;
+    private ?Starship $starships = null;
 
     /**
      * @var Collection<int, StarshipDroid>
