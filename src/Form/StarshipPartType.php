@@ -24,8 +24,9 @@ class StarshipPartType extends AbstractType
                     // new NotBlank([], 'Every part should have a name!'),// me da error 
                 ],
             ])
-            ->add('price')
-            ->add('notes')
+            ->add('price', null,[
+                'help' => 'We don\'t allow free parts! Set up a price',
+            ])
             ->add('starship', EntityType::class, [
                 'class' => Starship::class,
                 'choice_label' => function (Starship $starship) {
@@ -39,7 +40,9 @@ class StarshipPartType extends AbstractType
                     return $repo->createQueryBuilder('starship')
                         ->orderBy('starship.name', Order::Ascending->value);
                 },
+                'priority'=> 10,
             ])
+            ->add('notes')
             ->add('createAndAddNew', SubmitType::class, [
                 'validate' => false,
                 'attr' => [
