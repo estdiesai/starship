@@ -19,5 +19,5 @@ framework:
         # Namespaced pools use the above "app" backend by default
         pools:
             #my.dedicated.cache: null
-            iss_location_pool: 
-                default_lifetime: '%iss_location_cache_ttl%'
+            #iss_location_pool: 
+            #    default_lifetime: '%iss_location_cache_ttl%'
