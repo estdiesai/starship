@@ -17,8 +17,11 @@ class StarshipController extends AbstractController
         #[MapEntity(mapping: ['slug' => 'slug'])]
         Starship $ship,
     ): Response {
+        dump($ship);
+        dump($ship->getParts());
         return $this->render('starship/show.html.twig', [
             'ship' => $ship,
+            'parts' => $ship->getParts()
         ]);
     }
 }
