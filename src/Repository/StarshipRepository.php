@@ -39,7 +39,6 @@ class StarshipRepository extends ServiceEntityRepository
     public function findMyShip(): ?Starship
     {
         $ships = $this->findAll();
-
         return empty($ships) ? null : $ships[0];
     }
 
